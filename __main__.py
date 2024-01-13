@@ -43,28 +43,42 @@ def slow_print(statement, delay=0.05):
 def fightEngine(character, boss):
     slow_print("You are now fighting a(n) " + boss.name + "!")
     while character.health > 0 and boss.health > 0:
-        #Ask for player action
-        player_action = safer_input("""What do you want to do? \n
+        #Reset defense stats
+        character_defense = 0
+        boss_defense = 0
+        character_attack_effectiveness = 100
+        boss_attack_effectiveness = 100
+        #Ask for player action and calculate boss's actions
+        character_action = safer_input("""What do you want to do? \n
                    1. Attack \n
                    2. Defend \n""")
-        if player_action == 2:
-            character_defense = randint(1,100)
-            slow_print("Your defense has been increased by " + character_defense + "for this round!")
         boss_action = randint(1,2)
+        
+        #Check if either increased defense 
+        if character_action == 2:
+            character_defense = randint(1,100)
+            boss_attack_effectiveness = 100 - character_defense
+            slow_print("Your defense has been increased by {0} for this round!".format(character_defense))
         if boss_action == 2:
-            boss_defense = randint(1,100)
-        if player_action == 1:
-            boss.health -= character.attack
-            slow_print("You attacked the {} and dealt {} damage".format(boss.name, character.attack))
-            slow_print("The {}'s health is now {}".format(boss.name, boss.health))
+            boss_defense = randint(1,100) 
+            character_attack_effectiveness = 100 - boss_defense
+            slow_print("The {0} increased his defense by {1} for this round!".format(boss.name, boss_defense))
+
+        #Chceck if either are attacking and attack
+        if character_action == 1:
+            boss.health -= character.attack * (character_attack_effectiveness/100)
+            slow_print("You attacked the {0} and dealt {1:.2f} damage".format(boss.name, (character.attack * (character_attack_effectiveness/100))))
+            slow_print("The {0}'s health is now {1:.2f}".format(boss.name, boss.health))
         if boss_action == 1:
-            character.health -= boss.attack
-            slow_print("The boss attacked you and dealt {} damage".format(boss.attack))
-            slow_print("Your health is now " + str(character.health))
+            character.health -= boss.attack * (boss_attack_effectiveness/100)
+            slow_print("The boss attacked you and dealt {0:.2f} damage".format((boss.attack * (boss_attack_effectiveness/100))))
+            slow_print("Your health is now {0:.2f}".format(character.health))
     #Check if character is dead or alive and return the correct arguments
     if character.health <= 0:
+        print("You have died")
         return (True, character.health)
     elif character.health > 0:
+        print("Congratulations! You won!")
         return (False, character.health)
 
 #grab the variables needed and print a basic title screen
