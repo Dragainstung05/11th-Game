@@ -1,15 +1,13 @@
 # 11th grade Spring Semester game
 # (c) Jason Zheng 2024
-#Set this to true to enable debug mode 
-#TODO Make various debug modes to test different parts of the game
-debug = True
-fightEngineDebug = True
-fastprint = False
+
 
 #imports
 import bosses
 from time import sleep
 from random import randint 
+#Edit the debug symbols file to make the game enter different debug modes
+from debug_symbols import *
 
 #Functions
 
@@ -142,16 +140,18 @@ def fightEngine(character, boss):
 #grab the variables needed and print a basic title screen
 #Setting up classes
 #TODO add weapons class and edit attack atributes to be a weapons list
-class Player:
-    def __init__(self, name, health, weapons):
-        self.name  = name
-        self.health = health
-        self.weapons = weapons
-class Boss:
-    def __init__(self, name, health, attack):
+class Gladiator:
+    def __init__(self, name, health):
         self.name = name
         self.health = health
+class Player(Gladiator):
+    def __init__(self, name, health, weapons):
+        self.weapons = weapons
+        Gladiator.__init__(self, name, health)
+class Boss(Gladiator):
+    def __init__(self, name, health, attack):
         self.attack = attack
+        Gladiator.__init__(self, name, health)
 class Weapon:
     cooldownTimer = 0
     def __init__(self, name, attackName, attack, cooldown):
