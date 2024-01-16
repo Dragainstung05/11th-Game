@@ -1,15 +1,13 @@
 # 11th grade Spring Semester game
 # (c) Jason Zheng 2024
-#Set this to true to enable debug mode 
-#TODO Make various debug modes to test different parts of the game
-debug = True
-fightEngineDebug = True
-fastprint = False
+
 
 #imports
 import bosses
 from time import sleep
 from random import randint 
+#Edit the debug symbols file to make the game enter different debug modes
+from debug_symbols import *
 
 #Functions
 
