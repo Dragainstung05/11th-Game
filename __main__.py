@@ -78,6 +78,10 @@ def fightEngine(character, boss):
         
         #Check if either increased defense 
         if character_action == 2:
+            #Print out the current potions and ask for which potion to use
+            
+            #Use safer
+            potionChoice = safer_input("What potion do you want to use?", 0, len(character.potions)) - 1
             character_defense = randint(1,100)
             boss_attack_effectiveness = 100 - character_defense
             slow_print("Your defense has been increased by {0} for this round!".format(character_defense))
@@ -155,7 +159,12 @@ class Weapon:
         self.attackName = attackName
         self.attack = attack
         self.cooldown = cooldown
-
+class Potions:
+    def __init__(self, name, description, defenseEffectiveness, attackEffectiveness):
+        self.name = name
+        self.description = description
+        self.defenseEffectiveness = defenseEffectiveness
+        self.attackEffectiveness = attackEffectiveness
 #Main function
 def main():
     print("Welcome to Jason's Horrible Fighting Game.")
