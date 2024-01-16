@@ -138,16 +138,18 @@ def fightEngine(character, boss):
 #grab the variables needed and print a basic title screen
 #Setting up classes
 #TODO add weapons class and edit attack atributes to be a weapons list
-class Player:
-    def __init__(self, name, health, weapons):
-        self.name  = name
-        self.health = health
-        self.weapons = weapons
-class Boss:
-    def __init__(self, name, health, attack):
+class Gladiator:
+    def __init__(self, name, health):
         self.name = name
         self.health = health
+class Player(Gladiator):
+    def __init__(self, name, health, weapons):
+        self.weapons = weapons
+        Gladiator.__init__(self, name, health)
+class Boss(Gladiator):
+    def __init__(self, name, health, attack):
         self.attack = attack
+        Gladiator.__init__(self, name, health)
 class Weapon:
     cooldownTimer = 0
     def __init__(self, name, attackName, attack, cooldown):
