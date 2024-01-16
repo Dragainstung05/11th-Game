@@ -56,6 +56,19 @@ def weaponStats(weapon, turn_timer):
     if weapon.cooldownTimer - turn_timer > 0:
         print("The item has a cooldown and can not be used for {} turns".format((weapon.cooldownTimer - turn_timer)))
 
+#Asks which potion to use and returns character and opponent attack effectiveness 
+def playerPotionAsk(potions):
+    slow_print("You have these potions")
+    for i in range(len(potions)):
+        humanNumber = i + 1
+        print("-{} {}".format(humanNumber, potions[i].name))
+        print(potions[i].description)
+        print("Lasts for {} turns".format(potions[i].length))
+        print("The defense effectiveness is {} percent".format(potions[i].defenseEffectiveness))
+        print("The attack effectiveness is {} percent".format(potions[i].attackEffectiveness))
+        
+    potionChoice = safer_input("What potion do you want to use?", 0, len(potions)) - 1
+    return(potions[potionChoice])
 #Main engine that deals with each battle. Character should always be the actual player
 #Returns (if died (as a boolean), playerhealth)
 def fightEngine(character, boss):
@@ -78,8 +91,6 @@ def fightEngine(character, boss):
         if character_action == 2:
             #Print out the current potions and ask for which potion to use
             
-            #Use safer
-            potionChoice = safer_input("What potion do you want to use?", 0, len(character.potions)) - 1
             character_defense = randint(1,100)
             boss_attack_effectiveness = 100 - character_defense
             slow_print("Your defense has been increased by {0} for this round!".format(character_defense))
@@ -141,17 +152,21 @@ def fightEngine(character, boss):
 #Setting up classes
 #TODO add weapons class and edit attack atributes to be a weapons list
 class Gladiator:
-    def __init__(self, name, health):
+    def __init__(self, name, health, potions):
         self.name = name
         self.health = health
+        self.potions = potions
+    
+
 class Player(Gladiator):
-    def __init__(self, name, health, weapons):
+    def __init__(self, name, health, weapons, potions):
         self.weapons = weapons
-        Gladiator.__init__(self, name, health)
+        Gladiator.__init__(self, name, health, potions)        
+
 class Boss(Gladiator):
-    def __init__(self, name, health, attack):
+    def __init__(self, name, health, attack, potions):
         self.attack = attack
-        Gladiator.__init__(self, name, health)
+        Gladiator.__init__(self, name, health, potions)
 class Weapon:
     cooldownTimer = 0
     def __init__(self, name, attackName, attack, cooldown):
@@ -159,10 +174,11 @@ class Weapon:
         self.attackName = attackName
         self.attack = attack
         self.cooldown = cooldown
-class Potions:
-    def __init__(self, name, description, defenseEffectiveness, attackEffectiveness):
+class Potion:
+    def __init__(self, name, description, length, defenseEffectiveness = 0, attackEffectiveness = 0):
         self.name = name
         self.description = description
+        self.length = length
         self.defenseEffectiveness = defenseEffectiveness
         self.attackEffectiveness = attackEffectiveness
 #Main function
@@ -175,17 +191,21 @@ def main():
     else:
         Name = str(input("To continue, please enter your name ->"))
     fist = Weapon("Fist", "hit", 7, 0)
-    player = Player(Name, 100, [fist])
+    player = Player(Name, 100, [fist], [])
     
     if fightEngineDebug == True: 
         gun = Weapon("OP GUN", "shot", 100, 4)
         sword = Weapon("Wooden Sword", "swung at", 10, 2)
+        testpotion = Potion("Dev defense potion", "Increases defense by 50 percent for 1 turn", 1, 50, 0)
         player.weapons.append(gun)
-        player.weapons.append(sword)       
+        player.weapons.append(sword)   
+        player.potions.append(testpotion) 
+        thechoice = playerPotionAsk(player.potions)
+        print(thechoice.name)
         print(player.name)
         print(player.health)
         print(player.weapons)
-        Thug = Boss("Thug", 50, 10)
+        Thug = Boss("Thug", 50, 10, [])
         isDead, player.health = fightEngine(player,Thug)
         print (isDead)
         print (player.health)
