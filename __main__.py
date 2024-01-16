@@ -4,7 +4,7 @@
 #TODO Make various debug modes to test different parts of the game
 debug = True
 fightEngineDebug = True
-fastprint = True
+fastprint = False
 
 #imports
 import bosses
@@ -64,8 +64,7 @@ def fightEngine(character, boss):
     slow_print("You are now fighting a(n) " + boss.name + "!")
     turn_timer = 0
     while character.health > 0 and boss.health > 0:
-        #Reset defense stats and increase turn counter
-        turn_timer += 1
+        #Reset defense stats 
         character_defense = 0
         boss_defense = 0
         character_attack_effectiveness = 100
@@ -104,7 +103,7 @@ def fightEngine(character, boss):
                 weapon_choice = safer_input("What weapon do you want to choose?",0, len(character.weapons)) - 1
 
                 #check if it has a cooldown
-                if character.weapons[weapon_choice].cooldownTimer < turn_timer and character.weapons[weapon_choice].cooldownTimer != 0:
+                if character.weapons[weapon_choice].cooldownTimer > turn_timer:
                     print("That weapon currently has a cooldown. Please use another weapon ")
                 else:
                     i = 0
@@ -112,14 +111,20 @@ def fightEngine(character, boss):
             #Calculate boss health, modify the cooldown timer and print the results
             boss.health -= character.weapons[weapon_choice].attack * (character_attack_effectiveness/100)
             character.weapons[weapon_choice].cooldownTimer = (turn_timer+1) + character.weapons[weapon_choice].cooldown
-            slow_print("You {0} the {1} and dealt {2:.2f} damage".format(character.weapons[weapon_choice].attackName, boss.name, (character.weapons[weapon_choice].attack * (character_attack_effectiveness/100))))
+            slow_print("You {0} the {1} and dealt {2:.2f} damage".format(
+                                                                character.weapons[weapon_choice].attackName, 
+                                                                boss.name, 
+                                                                (character.weapons[weapon_choice].attack * (character_attack_effectiveness/100))))
             slow_print("The {0}'s health is now {1:.2f}".format(boss.name, boss.health))
         
         #Checks if boss attacks
         if boss_action == 1:
             character.health -= boss.attack * (boss_attack_effectiveness/100)
-            slow_print("The boss attacked you and dealt {0:.2f} damage".format((boss.attack * (boss_attack_effectiveness/100))))
+            slow_print("The {0} attacked you and dealt {1:.2f} damage".format(boss.name, (boss.attack * (boss_attack_effectiveness/100))))
             slow_print("Your health is now {0:.2f}".format(character.health))
+
+        #Increment Turn Timer
+        turn_timer += 1
 
     #After the while loop finishes and someone died
     #Checks if character is dead or alive and return the correct arguments
