@@ -59,16 +59,17 @@ def weaponStats(weapon, turn_timer):
 #Asks which potion to use and returns character and opponent attack effectiveness 
 def playerPotionAsk(potions):
     slow_print("You have these potions")
-    for i in range(len(potions)):
+    potionList = list(potions.keys())
+    for i in range(len(potionList)):
         humanNumber = i + 1
-        print("-{} {}".format(humanNumber, potions[i].name))
-        print(potions[i].description)
-        print("Lasts for {} turns".format(potions[i].length))
-        print("The defense effectiveness is {} percent".format(potions[i].defenseEffectiveness))
-        print("The attack effectiveness is {} percent".format(potions[i].attackEffectiveness))
-        
+        print("-{} {}".format(humanNumber, potionList[i].name))
+        print("   {}".format(potionList[i].description))
+        print("   Lasts for {} turns".format(potionList[i].length))
+        print("   The defense effectiveness is {} percent".format(potionList[i].defenseEffectiveness))
+        print("   The attack effectiveness is {} percent".format(potionList[i].attackEffectiveness))
+        print("   You have {} {} left".format(potions[potionList[i]],potionList[i].name))
     potionChoice = safer_input("What potion do you want to use?", 0, len(potions)) - 1
-    return(potions[potionChoice])
+    return(potionList[potionChoice])
 #Main engine that deals with each battle. Character should always be the actual player
 #Returns (if died (as a boolean), playerhealth)
 def fightEngine(character, boss):
@@ -90,12 +91,15 @@ def fightEngine(character, boss):
         #Check if either increased defense 
         if character_action == 2:
             #Print out the current potions and ask for which potion to use
+            potion_choice = playerPotionAsk(character.potions)
             
-            character_defense = randint(1,100)
+            #Edit the attack effectiveness based on potion effects and change the potions left in inventory
+            character_defense = potion_choice.defenseEffectiveness                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
             boss_attack_effectiveness = 100 - character_defense
+            character.potions[potion_choice] -= 1
             slow_print("Your defense has been increased by {0} for this round!".format(character_defense))
         if boss_action == 2:
-            boss_defense = randint(1,100) 
+            boss_defense = randint(1,50) 
             character_attack_effectiveness = 100 - boss_defense
             slow_print("The {0} increased his defense by {1} for this round!".format(boss.name, boss_defense))
 
@@ -191,17 +195,19 @@ def main():
     else:
         Name = str(input("To continue, please enter your name ->"))
     fist = Weapon("Fist", "hit", 7, 0)
-    player = Player(Name, 100, [fist], [])
+    player = Player(Name, 100, [fist], {})
     
     if fightEngineDebug == True: 
         gun = Weapon("OP GUN", "shot", 100, 4)
         sword = Weapon("Wooden Sword", "swung at", 10, 2)
         testpotion = Potion("Dev defense potion", "Increases defense by 50 percent for 1 turn", 1, 50, 0)
+        testpotion2 = Potion("OP Defense potion", "Dev stuff", 5, 100, 0)
         player.weapons.append(gun)
         player.weapons.append(sword)   
-        player.potions.append(testpotion) 
-        thechoice = playerPotionAsk(player.potions)
-        print(thechoice.name)
+        player.potions[testpotion] = 5 
+        player.potions[testpotion2] = 8
+        #thechoice = playerPotionAsk(player.potions)
+        #print(thechoice.name)
         print(player.name)
         print(player.health)
         print(player.weapons)
@@ -209,4 +215,5 @@ def main():
         isDead, player.health = fightEngine(player,Thug)
         print (isDead)
         print (player.health)
+
 main()
