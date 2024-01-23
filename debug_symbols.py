@@ -6,3 +6,10 @@ if debug == True:
     fastprint = False
     #Tests fight engine by instantly creating a battle with a Thug
     fightEngineDebug = True
+
+else:
+    fastprint = False
+    fightEngineDebug = False
+
+#Demos
+fightEngineDemo = True
