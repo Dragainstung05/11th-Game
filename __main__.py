@@ -59,8 +59,10 @@ def weaponStats(weapon, turn_timer):
 #Asks which potion to use and returns character and opponent attack effectiveness 
 def playerPotionAsk(potions):
     slow_print("You have these potions")
+    #Pulls a list of the potions in inventory from potions dictionary
     potionList = list(potions.keys())
     for i in range(len(potionList)):
+        #Adds one to everything to turn it into a human number
         humanNumber = i + 1
         print("-{} {}".format(humanNumber, potionList[i].name))
         print("   {}".format(potionList[i].description))
@@ -68,33 +70,79 @@ def playerPotionAsk(potions):
         print("   The defense effectiveness is {} percent".format(potionList[i].defenseEffectiveness))
         print("   The attack effectiveness is {} percent".format(potionList[i].attackEffectiveness))
         print("   You have {} {} left".format(potions[potionList[i]],potionList[i].name))
+    
+    #Asks which potion the player wants to use
     potionChoice = safer_input("What potion do you want to use?", 0, len(potions)) - 1
+    #Returns the potion that the player wants by pulling the potion from potionlist
     return(potionList[potionChoice])
+
+
 #Main engine that deals with each battle. Character should always be the actual player
 #Returns (if died (as a boolean), playerhealth)
 def fightEngine(character, boss):
     slow_print("You are now fighting a(n) " + boss.name + "!")
     turn_timer = 0
+    character_active_potions = []
     while character.health > 0 and boss.health > 0:
-        #Reset defense stats 
+        #Calculate defense stats based on active potions and clear potion deletion list
         character_defense = 0
+        potionDeleteList = []
+        for i in range(len(character_active_potions)):
+            #Unpack next list item
+            current_potion, potion_length = character_active_potions[i]
+            #Check if potion length has expired
+            if potion_length > turn_timer:
+                character_defense += current_potion.defenseEffectiveness
+            else:
+                #If expired, marked for deletion. (You can not delete rn w/o breaking something)
+                potionDeleteList.append(character_active_potions[i])
+        
+        #Actual potion deletion based on potion delete list
+        #Used list comprehension to define a new list w/o the potions in the potion delete list
+        character_active_potions = [x for x in character_active_potions if x not in potionDeleteList]
+        
+        #Tell the player there are still active potions
+        if len(character_active_potions) != 0:
+            slow_print("You still have active potions")
+
+        #Clear other stats and variables          
         boss_defense = 0
         character_attack_effectiveness = 100
         boss_attack_effectiveness = 100
+        character_action = 0
 
         #Ask for player action and calculate boss's actions
-        character_action = safer_input("""What do you want to do? \n
+        print("""Your current options are \n
                    1. Attack \n
                    2. Defend \n""")
+        if len(character_active_potions) != 0:
+            print("""                   3. Check Currently Active Potions""") 
+        character_action = safer_input("What do you want to do? ->",1,3)
+
+        #If the player wants to check active potions, print out whats active and ask what to do next
+        if character_action == 3:
+            for i in range(len(character_active_potions)):
+                current_potion, potion_length = character_active_potions[i]
+                slow_print("A {0} is increasing your defense by {1} for {2} more turns".format(
+                                                            current_potion.name, 
+                                                            current_potion.defenseEffectiveness,
+                                                            (potion_length-turn_timer)))
+            print("""Your current options are \n
+                   1. Attack \n
+                   2. Defend \n""")
+            character_action = safer_input("What do you want to do next? ->",1,2)    
         boss_action = randint(1,2)
         
         #Check if either increased defense 
         if character_action == 2:
             #Print out the current potions and ask for which potion to use
             potion_choice = playerPotionAsk(character.potions)
-            
+
+            #Take the chosen potion and add it to character_active_potions list with a calulated length that it should last
+            character_active_potions.append([potion_choice, (turn_timer + potion_choice.length)])
+
             #Edit the attack effectiveness based on potion effects and change the potions left in inventory
-            character_defense = potion_choice.defenseEffectiveness                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+            character_defense += potion_choice.defenseEffectiveness                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
             boss_attack_effectiveness = 100 - character_defense
             character.potions[potion_choice] -= 1
             slow_print("Your defense has been increased by {0} for this round!".format(character_defense))
@@ -117,7 +165,7 @@ def fightEngine(character, boss):
             #Ask the player what weapon they want
             while i != 0:
                 #Use safer_input's range limiter to make sure the weapon actually exist and the -1 is to use code counting from 0 instead of 1
-                weapon_choice = safer_input("What weapon do you want to choose?",0, len(character.weapons)) - 1
+                weapon_choice = safer_input("What weapon do you want to choose?",1, len(character.weapons)) - 1
 
                 #check if it has a cooldown
                 if character.weapons[weapon_choice].cooldownTimer > turn_timer:
@@ -155,13 +203,12 @@ def fightEngine(character, boss):
 #grab the variables needed and print a basic title screen
 #Setting up classes
 #TODO add weapons class and edit attack atributes to be a weapons list
-class Gladiator:
+class Gladiator:    
     def __init__(self, name, health, potions):
         self.name = name
         self.health = health
         self.potions = potions
-    
-
+         
 class Player(Gladiator):
     def __init__(self, name, health, weapons, potions):
         self.weapons = weapons
@@ -178,6 +225,7 @@ class Weapon:
         self.attackName = attackName
         self.attack = attack
         self.cooldown = cooldown
+
 class Potion:
     def __init__(self, name, description, length, defenseEffectiveness = 0, attackEffectiveness = 0):
         self.name = name
@@ -185,6 +233,7 @@ class Potion:
         self.length = length
         self.defenseEffectiveness = defenseEffectiveness
         self.attackEffectiveness = attackEffectiveness
+
 #Main function
 def main():
     print("Welcome to Jason's Horrible Fighting Game.")
@@ -216,4 +265,16 @@ def main():
         print (isDead)
         print (player.health)
 
+    if fightEngineDemo == True:
+        sword = Weapon("Wooden Sword", "swung at", 10, 2)
+        bow = Weapon("Bow", "shot", 20, 4)
+        player.weapons.append(sword)
+        player.weapons.append(bow)
+        defensePot = Potion("Health Potion", "Increases your defense by 30%", 1, 30,)
+        player.potions[defensePot] = 10
+
+        isDead = False
+        while isDead == False:
+            Glad = Boss("Gladiator", 50, 10, [])
+            isDead, player.health = fightEngine(player, Glad)
 main()
