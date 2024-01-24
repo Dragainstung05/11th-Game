@@ -316,7 +316,7 @@ def main():
             SpikeGlad = Boss("Scary Gladiator", 25, 50, [])
             GladBoss = Boss("Big Gladiator", 100, 25, [])
             Glads = [Glad, GladBoss, SpikeGlad]
-            ChosenGlad = Glads[randint(0,3)]
+            ChosenGlad = Glads[randint(0,2)]
             isDead, player.health = fightEngine(player, ChosenGlad)
             battles += 1
 main()
