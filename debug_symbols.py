@@ -3,7 +3,7 @@
 debug = True
 if debug == True:
     #Speed up all prints using slow_print() 
-    fastprint = False
+    fastprint = True
     #Tests fight engine by instantly creating a battle with a Thug
     fightEngineDebug = True
 
@@ -12,4 +12,4 @@ else:
     fightEngineDebug = False
 
 #Demos
-fightEngineDemo = True
+fightEngineDemo = False
