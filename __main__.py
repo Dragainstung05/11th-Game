@@ -84,7 +84,6 @@ def main():
         bow = Weapon("Bow", "shot", 20, 4)
         player.weapons.append(sword)
         player.weapons.append(bow)
-        player.weapons.append(gun)
         defensePot = Potion("Defense Potion", "Increases your defense by 40%", 3, 40,)
         offensePot = Potion("Offense Potion", "Increases the damage your attacks do for 5 turns by 20%", 6,0,20)
         healthPot = Potion("Health Potion", "Increases your health by 27 over 3 turns", 3, 0, 0, 9)

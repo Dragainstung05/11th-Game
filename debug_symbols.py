@@ -1,6 +1,6 @@
 #Set the debug to true to enable debug mode 
 #General debug mode that prints more information and skips some steps
-debug = True
+debug = False
 if debug == True:
     #Speed up all prints using slow_print() 
     fastprint = True
@@ -12,4 +12,4 @@ else:
     fightEngineDebug = False
 
 #Demos
-fightEngineDemo = False
+fightEngineDemo = True
